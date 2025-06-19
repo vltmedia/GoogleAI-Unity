@@ -1,0 +1,294 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GenerativeAI.Live</name>
+    </assembly>
+    <members>
+        <member name="T:GenerativeAI.Live.AudioHeaderInfo">
+            <summary>
+            Represents the header information of an audio file.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.AudioHeaderInfo.HasHeader">
+            <summary>
+            Indicates whether the audio file contains a header.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.AudioHeaderInfo.SampleRate">
+            <summary>
+            The sample rate of the audio file in Hz.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.AudioHeaderInfo.Channels">
+            <summary>
+            The number of audio channels (e.g., 1 for mono, 2 for stereo).
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.AudioHeaderInfo.BitsPerSample">
+            <summary>
+            The number of bits per sample in the audio data.
+            </summary>
+        </member>
+        <member name="T:GenerativeAI.Live.AudioBufferReceivedEventArgs">
+            <summary>
+            Provides event data.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.AudioBufferReceivedEventArgs.Buffer">
+            <summary>
+            Gets or sets the audio data buffer.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.AudioBufferReceivedEventArgs.HeaderInfo">
+            <summary>
+            Gets or sets the header information for the audio data.
+            </summary>
+        </member>
+        <member name="T:GenerativeAI.Live.MessageReceivedEventArgs">
+            <summary>
+            Provides event data.
+            </summary>
+        </member>
+        <member name="T:GenerativeAI.Live.TextChunkReceivedArgs">
+            <summary>
+            Contains the arguments for the event when a text chunk is received.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.TextChunkReceivedArgs.Text">
+            <summary>
+            Gets or sets the text of the received chunk.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.TextChunkReceivedArgs.IsTurnFinish">
+            <summary>
+            Gets or sets a value indicating whether the turn is finished.
+            </summary>
+        </member>
+        <member name="T:GenerativeAI.Live.WebSocketClientExtensions">
+            <summary>
+            Provides extension for WebsocketClient.
+            </summary>
+        </member>
+        <member name="T:GenerativeAI.Live.Helper.AudioHelper">
+            <summary>
+            Provides utility methods for working with audio data, including methods to add WAV headers to raw audio data 
+            and validate WAV file headers.
+            </summary>
+        </member>
+        <member name="M:GenerativeAI.Live.Helper.AudioHelper.AddWaveHeader(System.Byte[],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Adds a WAV file header to the given raw audio data.
+            </summary>
+            <param name="audioData">The raw audio data to which the header will be added.</param>
+            <param name="numChannels">The number of audio channels (e.g., 1 for mono, 2 for stereo).</param>
+            <param name="sampleRate">The sample rate of the audio (e.g., 44100 for 44.1kHz).</param>
+            <param name="bitsPerSample">The number of bits per sample (e.g., 16 for 16-bit audio).</param>
+            <returns>A byte array containing the audio data with the WAV header prepended.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="audioData"/> is null.</exception>
+        </member>
+        <member name="M:GenerativeAI.Live.Helper.AudioHelper.IsValidWaveHeader(System.Byte[])">
+            <summary>
+            Validates whether the given byte array contains a valid WAV file header.
+            </summary>
+            <param name="buffer">The byte array to validate.</param>
+            <returns><c>true</c> if the buffer contains a valid WAV header; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="T:GenerativeAI.Live.MultiModalLiveClient">
+            <summary>
+            A client for interacting with the Gemini Multimodal Live API using WebSockets.
+            </summary>
+            <seealso href="https://ai.google.dev/gemini-api/docs/multimodal-live">See Official API Documentation</seealso>
+        </member>
+        <member name="P:GenerativeAI.Live.MultiModalLiveClient.ConnectionId">
+            <summary>
+            Gets the unique identifier for this WebSocket connection.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.MultiModalLiveClient.ModelName">
+            <summary>
+            Gets or sets the name of the model being used.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.MultiModalLiveClient.Config">
+            <summary>
+            Gets the configuration settings for content generation.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.MultiModalLiveClient.SafetySettings">
+            <summary>
+            Gets the collection of safety settings applied to the generation process.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.MultiModalLiveClient.SystemInstruction">
+            <summary>
+            Gets the system instruction to guide model behavior during the session.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.MultiModalLiveClient.FunctionTools">
+            <summary>
+            Gets or sets the list of function tools available for the session.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.MultiModalLiveClient.ToolConfig">
+            <summary>
+            Gets or sets the configuration settings for the enabled tools.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.MultiModalLiveClient.UseGoogleSearch">
+            <summary>
+            Gets or sets a value indicating whether Google Search is enabled for the session.
+            </summary>
+        </member>
+        <member name="P:GenerativeAI.Live.MultiModalLiveClient.UseCodeExecutor">
+            <summary>
+            Gets or sets a value indicating whether the code executor is enabled for the session.
+            </summary>
+        </member>
+        <member name="M:GenerativeAI.Live.MultiModalLiveClient.#ctor(GenerativeAI.Core.IPlatformAdapter,System.String,GenerativeAI.Types.GenerationConfig,System.Collections.Generic.ICollection{GenerativeAI.Types.SafetySetting},System.String,System.Boolean,System.Boolean,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Represents a client for managing multi-modal interactions with generative models.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.AudioChunkReceived">
+            <summary>
+            Event triggered when an audio chunk is received.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.AudioReceiveCompleted">
+            <summary>
+            Event triggered when the audio reception is completed.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.GenerationInterrupted">
+            <summary>
+            Event triggered when generation is interrupted.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.MessageReceived">
+            <summary>
+            Event triggered when a message is received from the server.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.Connected">
+            <summary>
+            Event triggered when the WebSocket client is successfully connected.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.Disconnected">
+            <summary>
+            Event triggered when the WebSocket client is disconnected.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.ErrorOccurred">
+            <summary>
+            Event triggered when an error occurs.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.TextChunkReceived">
+            <summary>
+            Event triggered when a chunk of text is received from the server during the live API session.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.InputTranscriptionReceived">
+            <summary>
+            Event triggered upon receiving input transcription data.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.OutputTranscriptionReceived">
+            <summary>
+            An event triggered when an output transcription is received from the system.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.GoAwayReceived">
+            <summary>
+            Message sent by the server to indicate that the current connection should be terminated
+            and the client should cease sending further requests on this stream.
+            This is often used for graceful shutdown or when the server is no longer able to
+            process requests on the current stream.
+            </summary>
+        </member>
+        <member name="E:GenerativeAI.Live.MultiModalLiveClient.SessionResumableUpdateReceived">
+            <summary>
+            Occurs when the server sends an update that allows the current session to be resumed.
+            This event provides information related to session resumption, enabling the client to continue
+            an existing session without starting over.
+            </summary>
+        </member>
+        <member name="M:GenerativeAI.Live.MultiModalLiveClient.ConnectAsync(System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Connects to the MultiModal Live API WebSocket endpoint.
+            </summary>
+            <returns>A task representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:GenerativeAI.Live.MultiModalLiveClient.SendSetupAsync(System.Threading.CancellationToken)">
+            <summary>
+            Sends a setup configuration that initializes the generative model with
+            appropriate tools, system instructions, and generation settings.
+            </summary>
+            <param name="cancellationToken">A token to observe for cancellation requests during the setup process.</param>
+            <returns>A task that represents the asynchronous operation of sending the setup configuration.</returns>
+        </member>
+        <member name="M:GenerativeAI.Live.MultiModalLiveClient.DisconnectAsync(System.Threading.CancellationToken)">
+            <summary>
+            Disconnects the client from the MultiModal Live API and releases related resources.
+            </summary>
+            <param name="cancellationToken">
+            A token to monitor for cancellation requests.
+            </param>
+            <returns>
+            A task representing the asynchronous operation.
+            </returns>
+        </member>
+        <member name="M:GenerativeAI.Live.MultiModalLiveClient.SendSetupAsync(GenerativeAI.Types.BidiGenerateContentSetup,System.Threading.CancellationToken)">
+            <summary>
+            Sends a setup message to configure the multi-modal live client with the provided generation settings and tools.
+            </summary>
+            <param name="cancellationToken">
+            A cancellation token that can be used to cancel the operation.
+            </param>
+            <returns>
+            A task representing the asynchronous operation.
+            </returns>
+        </member>
+        <member name="M:GenerativeAI.Live.MultiModalLiveClient.SendClientContentAsync(GenerativeAI.Types.BidiGenerateContentClientContent,System.Threading.CancellationToken)">
+            <summary>
+            Sends a client content message to the connected generative AI service.
+            </summary>
+            <param name="clientContent">The content to be sent, encapsulated in a <see cref="T:GenerativeAI.Types.BidiGenerateContentClientContent"/> object.</param>
+            <param name="cancellationToken">A token to observe for cancellation of the send operation.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:GenerativeAI.Live.MultiModalLiveClient.SendToolResponseAsync(GenerativeAI.Types.BidiGenerateContentToolResponse,System.Threading.CancellationToken)">
+            <summary>
+            Sends a tool response message of type <see cref="T:GenerativeAI.Types.BidiGenerateContentToolResponse"/> through the WebSocket connection.
+            </summary>
+            <param name="toolResponse">The tool response to be sent.</param>
+            <param name="cancellationToken">A cancellation token to observe while waiting for the operation to complete.</param>
+            <returns>A task that represents the asynchronous send operation.</returns>
+        </member>
+        <member name="M:GenerativeAI.Live.MultiModalLiveClient.AddFunctionTools(System.Collections.Generic.List{GenerativeAI.Core.IFunctionTool},GenerativeAI.Types.ToolConfig)">
+            <summary>
+            Assigns a collection of function tools and the associated configuration to the client.
+            </summary>
+            <param name="functionTools">The list of function tools to be added.</param>
+            <param name="toolConfig">The configuration settings for the added tools.</param>
+        </member>
+        <member name="M:GenerativeAI.Live.MultiModalLiveClient.SendAudioAsync(System.Byte[],System.String,System.Threading.CancellationToken)">
+            <summary>
+            Asynchronously sends audio data to the multi-modal client for processing.
+            </summary>
+            <param name="audioData">The audio data in byte array format to be sent.</param>
+            <param name="mimeType">The MIME type of the audio data. Defaults to "audio/pcm; rate=16000;".</param>
+            <param name="cancellationToken">A token to cancel the asynchronous operation if needed.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:GenerativeAI.Live.MultiModalLiveClient.SentTextAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Sends a text prompt as a user input to the model for processing.
+            </summary>
+            <param name="prompt">The text input provided by the user to the model.</param>
+            <param name="cancellationToken">A token to observe while waiting for the task to complete, allowing cancellation if needed.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+    </members>
+</doc>
