@@ -11,6 +11,7 @@ namespace GenerativeAI
     [System.Serializable]
     public class GApi
     {
+        public GPayload payload;
         public static string ApiKey;
         public  string Model;
         public GenerationConfiguration generationConfiguration;
@@ -18,6 +19,40 @@ namespace GenerativeAI
         public Action<string> OnLog;
         public Action<string> OnResponseReceived;
         public Action<string> OnErrorReceived;
+
+
+        public List<Content> contents
+        {
+            get
+            {
+
+                if (payload == null)
+                {
+                    payload = new GPayload();
+                }
+                return payload.contents;
+            }
+            set
+            {
+                if (payload == null)
+                {
+                    payload = new GPayload();
+                }
+                payload.contents = value;
+            }
+        }
+
+        public string payloadJson
+        {
+            get
+            {
+                if (payload == null)
+                {
+                    payload = new GPayload();
+                }
+                return payload.ToJson();
+            }
+        }
         public static void SetStaticApiKey(string apiKey)
         {
             ApiKey = apiKey;

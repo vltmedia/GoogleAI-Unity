@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
@@ -6,7 +7,21 @@ namespace GenerativeAI.Unity
     public abstract class GPlugin<T> : MonoBehaviour, IGPlugin
 {
         public T api;
+        public string Model = "gemini-2.0-flash";
+
         public UnityEvent<object> onResponseReceived;
+        DateTime debounceSend = DateTime.MinValue;
+        public bool debounced
+        {
+            get
+            {
+                if (debounceSend < DateTime.Now)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
 
         public string apiKey
         {

@@ -57,18 +57,31 @@ namespace GenerativeAI
     {
         public List<string> responseModalities;
         public SpeechConfig speechConfig;
+        public GenerationConfiguration()
+        {
+            responseModalities = new List<string>();
+            speechConfig = new SpeechConfig();
+        }
     }
 
     [System.Serializable]
     public class SpeechConfig
     {
         public VoiceConfig voiceConfig;
+        public SpeechConfig()
+        {
+            voiceConfig = new VoiceConfig();
+        }
     }
 
     [System.Serializable]
     public class VoiceConfig
     {
         public PrebuiltVoiceConfig prebuiltVoiceConfig;
+        public VoiceConfig()
+        {
+            prebuiltVoiceConfig = new PrebuiltVoiceConfig();
+        }
     }
 
     [System.Serializable]
@@ -89,6 +102,7 @@ namespace GenerativeAI
         public GPayloadBase()
         {
             contents = new List<T>();
+            generationConfig = new GenerationConfiguration();
         }
         public GPayloadBase(List<T> contents)
         {

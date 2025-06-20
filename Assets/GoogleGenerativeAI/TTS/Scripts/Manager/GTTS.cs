@@ -1,21 +1,21 @@
-using UnityEngine;
+using GenerativeAI.Types;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using UnityEngine;
 namespace GenerativeAI.Unity
 {
 
-    public class GTTS : MonoBehaviour
-{
-        public string apiKey
-        {
-            get
-            {
-                return GGenerativeAIManager.APIKey;
-            }
-        }
+    public class GTTS : GPlugin<GTTSApi>
+    {
+        public override string ID => "google.tts.generate";
+        AudioClip audioClip = null;
+
+
         public static GTTS Instance;
 
         private void Awake()
@@ -36,96 +36,96 @@ namespace GenerativeAI.Unity
 
         private static readonly HttpClient httpClient = new HttpClient();
 
-        public async void Speak()
+        public async override Task<object> Run(object data)
         {
-            var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={apiKey}";
-
-            var payload = new
+            object response = null;
+            if (data is string text)
             {
-                contents = new[]
-                {
-                new
-                {
-                    parts = new[]
-                    {
-                        new { text = prompt }
-                    }
-                }
-            },
-                generationConfig = new
-                {
-                    responseModalities = new[] { "AUDIO" },
-                    speechConfig = new
-                    {
-                        voiceConfig = new
-                        {
-                            prebuiltVoiceConfig = new
-                            {
-                                voiceName = voiceName
-                                
-                            }
-                        }
-                    }
-                },
-                model = ModelName
-            };
-
-            var json = JsonUtility.ToJson(payload).Replace("\"prebuiltVoiceConfig\"", "\"prebuiltVoiceConfig\""); // workaround for camelCase issue
-
-            try
-            {
-                var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
-                var responseText = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    Debug.LogError($"Gemini TTS failed: {response.StatusCode} - {responseText}");
-                    return;
-                }
-
-                // Extract base64 audio
-                var base64 = JObject.Parse(responseText)["candidates"]?[0]?["content"]?["parts"]?[0]?["inlineData"]?["data"]?.ToString();
-
-                if (string.IsNullOrEmpty(base64))
-                {
-                    Debug.LogError("No audio data found in response.");
-                    return;
-                }
-
-                var pcmBytes = Convert.FromBase64String(base64);
-                var clip = ConvertPCMToAudioClip(pcmBytes, 24000, 1, "GeminiTTS");
-                AudioSource.PlayClipAtPoint(clip, Vector3.zero);
+                response = await SendText(text);
+                onResponseReceived.Invoke(response);
             }
-            catch (Exception ex)
+            else
             {
-                Debug.LogError("Error speaking from Gemini: " + ex);
+                Debug.LogError("Data is not a string");
             }
+            return response;
         }
 
-        private AudioClip ConvertPCMToAudioClip(byte[] pcmData, int sampleRate, int channels, string name)
+        public async Task<AudioClip> SendText(string text)
         {
-            int sampleCount = pcmData.Length / 2; // 2 bytes per sample (16-bit)
-            float[] samples = new float[sampleCount];
+            if (debounced == false)
+            {
+                return null;
+            }
+            var response = await api.SendText(text);
+            if(response != null)
+            {
+                try
+                {
+                    audioClip = LoadPCMFromBase64(response);
+                    return audioClip;
+                }
+                catch
+                {
+                                        Debug.LogError("Error converting response to AudioClip");
+                    return null;
+                }
+            }
+            return null;
+        }
+        //private AudioClip ConvertPCMToAudioClip(byte[] pcmData, int sampleRate, int channels, string name)
+        //{
+        //    int sampleCount = pcmData.Length / 2; // 2 bytes per sample (16-bit)
+        //    float[] samples = new float[sampleCount];
+
+        //    for (int i = 0; i < sampleCount; i++)
+        //    {
+        //        short sample = BitConverter.ToInt16(pcmData, i * 2);
+        //        samples[i] = sample / 32768f; // normalize to [-1, 1]
+        //    }
+
+        //    var clip = AudioClip.Create(name, sampleCount / channels, channels, sampleRate, false);
+        //    clip.SetData(samples, 0);
+        //    return clip;
+        //}
+
+        public AudioClip LoadPCMFromBase64(byte[] pcmData, int sampleRate = 24000, int channels = 1)
+        {
+            int sampleCount = pcmData.Length / 2; // 16-bit audio = 2 bytes per sample
+            float[] audioData = new float[sampleCount];
 
             for (int i = 0; i < sampleCount; i++)
             {
-                short sample = BitConverter.ToInt16(pcmData, i * 2);
-                samples[i] = sample / 32768f; // normalize to [-1, 1]
+                short value = BitConverter.ToInt16(pcmData, i * 2);
+                audioData[i] = value / 32768f;
             }
 
-            var clip = AudioClip.Create(name, sampleCount / channels, channels, sampleRate, false);
-            clip.SetData(samples, 0);
+            AudioClip clip = AudioClip.Create("GeminiTTS", sampleCount / channels, channels, sampleRate, false);
+            clip.SetData(audioData, 0);
             return clip;
         }
 
+
         // Start is called once before the first execution of Update after the MonoBehaviour is created
+
         void Start()
     {
-        
-    }
+            Register();
+            if(api == null)
+            {
+                api = new GTTSApi();
+            }
+            api.SetModel(ModelName);
+            if(api.payload == null)
+            {
+                api.payload = new GPayload();
+            }
+            api.payload.generationConfig.responseModalities = new List<string> { "AUDIO" };
+            api.payload.generationConfig.speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName = voiceName;
+        }
 
-    // Update is called once per frame
-    void Update()
+        // Update is called once per frame
+        void Update()
     {
         
     }

@@ -10,17 +10,22 @@ namespace GenerativeAI.Unity
         public TMPro.TMP_InputField inputField;
         public Button sendButton;
         public TMPro.TMP_InputField chatView;
-
+        public AudioSource audioSource;
         [Space(10)]
 
         [Header("Settings")]
         public string textPlugin = "google.text.generate";
+        public string tttsPlugin = "google.tts.generate";
         public Color32 userColor;
         public string userColorHex { get { return ColorUtility.ToHtmlStringRGBA(userColor); } }
         public Color32 aIColor;
         public string aIColorHex { get { return ColorUtility.ToHtmlStringRGBA(aIColor); } }
 
 
+        [Space(10)]
+
+        [Header("Debug Info")]
+        public AudioClip audioClip;
         public static GChatUI Instance;
         DateTime debounceSend = DateTime.MinValue;
         public bool debounced
@@ -50,6 +55,10 @@ namespace GenerativeAI.Unity
     {
             GText.Instance.onResponseReceived.AddListener(OnResponseReceived);
             sendButton.onClick.AddListener(OnSendButtonClicked);
+            if(audioSource == null)
+            {
+                audioSource = GetComponent<AudioSource>();
+            }
         }
         public void AddUserText(string text)
         {
@@ -88,9 +97,27 @@ namespace GenerativeAI.Unity
                
                 if (!string.IsNullOrEmpty(response.ToString()))
                 {
-                    AddResponseText(response.ToString());
-                }
-                else
+                      var   ttsClip = await GPluginManager.Instance.RunFunction(tttsPlugin, responseText);
+                        if(ttsClip != null)
+                        {
+                            if(audioClip is AudioClip) { 
+                                audioClip = ttsClip as AudioClip;
+                                if(audioSource != null)
+                                {
+                                    audioSource.Stop();
+                                    audioSource.PlayOneShot(audioClip);
+                                }
+                            }
+                            else
+                            {
+                               Debug.LogError("Audio clip is null");
+                            }
+                        }
+                        AddResponseText(response.ToString());
+
+                    }
+
+                    else
                 {
                     AddResponseText("No response received.");
                 }

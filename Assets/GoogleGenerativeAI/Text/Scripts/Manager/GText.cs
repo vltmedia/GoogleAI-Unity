@@ -27,19 +27,6 @@ namespace GenerativeAI.Unity
                 Destroy(this);
             }
         }
-        public string Model = "gemini-2.0-flash";
-        DateTime debounceSend = DateTime.MinValue;
-        public bool debounced
-        {
-            get
-            {
-                if (debounceSend < DateTime.Now)
-                {
-                    return true;
-                }
-                return false;
-            }
-        }
 
 
 
