@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 namespace GenerativeAI
 {
 
@@ -44,6 +45,47 @@ namespace GenerativeAI
     {
         public string modality;
         public int tokenCount;
+    }
+    [System.Serializable]
+    public class SetupPayload
+    {
+        public string model;
+        public GenerationConfiguration generationConfig;
+        public SetupPayload()
+        {
+            generationConfig = new GenerationConfiguration();
+        }
+    }
+    
+    [System.Serializable]
+    public class Blob
+    {
+        /// <summary>
+        /// The IANA standard MIME type of the source data. Examples:
+        /// - image/png
+        /// - image/jpeg
+        /// If an unsupported MIME type is provided, an error will be returned.
+        /// For a complete list of supported types, see
+        /// <see href="https://ai.google.dev/gemini-api/docs/prompting_with_media#supported_file_formats">Supported file formats</see>.
+        /// </summary>
+        [JsonPropertyName("mimeType")]
+        public string? MimeType { get; set; }
+
+        /// <summary>
+        /// Raw bytes for media formats.
+        /// A base64-encoded string.
+        /// </summary>
+        [JsonPropertyName("data")]
+        public string? Data { get; set; }
+    }
+    [System.Serializable]
+    public class SetupPayloadContainer
+    {
+        public SetupPayload setup;
+        public SetupPayloadContainer()
+        {
+            setup = new SetupPayload();
+        }
     }
 
     [System.Serializable]
@@ -107,6 +149,7 @@ namespace GenerativeAI
         public GPayloadBase(List<T> contents)
         {
             this.contents = contents;
+            generationConfig = new GenerationConfiguration();
         }
         public void SetModel(string model)
         {
@@ -145,7 +188,29 @@ namespace GenerativeAI
         public List<CandidatesTokensDetail> candidatesTokensDetails;
     }
 
+    [System.Serializable]
+    public class BidiGenerateContentRealtimeInput
+    {
+        /// <summary>
+        /// Inlined bytes data for media input.
+        /// </summary>
+        [JsonPropertyName("mediaChunks")]
+        public Blob[]? MediaChunks { get; set; }
+    }
+    [System.Serializable]
+    public class BidiGenerateContentClientContent
+    {
+        /// <summary>
+        /// The content appended to the current conversation with the model.
+        /// For single-turn queries, this is a single instance. For multi-turn queries, this is a repeated field that contains conversation history and the latest request.
+        /// </summary>
+        [JsonPropertyName("turns")]
+        public Content[]? Turns { get; set; }
 
-
-
+        /// <summary>
+        /// If true, indicates that the server content generation should start with the currently accumulated prompt. Otherwise, the server awaits additional messages before starting generation.
+        /// </summary>
+        [JsonPropertyName("turnComplete")]
+        public bool? TurnComplete { get; set; }
+    }
 }
